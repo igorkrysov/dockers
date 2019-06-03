@@ -1,0 +1,50 @@
+version: '2'
+
+services:
+  database:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+    volumes:
+      - ./src/db:/var/lib/mysql
+    # command: mysql -u root -p ${DB_PASS} < dump.sql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 9999:8080
+  
+  php:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    restart: always        
+    volumes:
+      - ./src/www/education:/var/www/html
+    ports:
+      - 8888:80
+    environment:
+      - APACHE_RUN_USER='#100'
+      - "DB_PORT=3306"
+      - "DB_HOST=database"
+  composer:
+    build: ./composer
+    volumes:
+      - ./src/www/education:/var/www/html
+    working_dir: /var/www/html
+    command: composer install
+  node:
+    build: ./node
+    volumes:
+      - ./src/www/education:/src/
+      - ./src/www/education/node_modules:/src/app/node_modules
+    working_dir: /src/ 
+    command: sh -c "npm install && npm run watch-poll"
+    # command: npm run watch-poll
+volumes:
+  www:
+  db:
+  node_modules:
