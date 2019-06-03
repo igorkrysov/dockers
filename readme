@@ -1,0 +1,8 @@
+mkdir src
+mkdir src/db    #dir for db
+mkdir src/www   #copy source laravel project
+
+
+dockers/laravel/php/Dockerfile
+if you need change APACHE_DOCUMENT_ROOT
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
